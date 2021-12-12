@@ -189,7 +189,7 @@ async def create_upload_file(file: UploadFile = File(...), token: str = Form(...
         dir_path = os.path.join(zip_dir, file.filename)
         with open(dir_path, 'wb') as f:  # gif直接保存在压缩后的文件夹
             f.write(contents)
-        return {"path": src_path}
+        return {"path": dir_path}
 
     with open(src_path, 'wb') as f:  # 其余保存在原图文件夹
         f.write(contents)
