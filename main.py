@@ -21,8 +21,14 @@ DB_CLIENT = AsyncIOMotorClient('127.0.0.1', 27017)
 DB = DB_CLIENT['shushuo']  # 库名称
 
 app = FastAPI()  # 创建 api 对象
+
+# 调试所需端口 正式上线可以关闭(即其为空值) 默认 "http://localhost:8080"
+# debug_origin = "http://localhost:8080"
+debug_origin = ""
+
 origins = [
-    "http://localhost:6666"
+    "http://localhost:6666",
+    debug_origin
 ]
 # 解决跨域问题
 app.add_middleware(
@@ -44,7 +50,7 @@ async def zipping(path: str):
     dir_path = os.path.join(zip_dir, pic_name)
 
     if os.path.exists(dir_path):  # 已经存在压缩就不再执行后续
-        return {"path": dir_path}
+        return {"path": pic_name}
 
     elif pic_name.lower().endswith(".gif"):  # 不压缩gif
         return HTTPException(
@@ -72,7 +78,7 @@ async def zipping(path: str):
 
     zip_num = 10
     cv2.imwrite(dir_path, img_resize, [cv2.IMWRITE_JPEG_QUALITY, zip_num])
-    return {"path": dir_path}
+    return {"path": pic_name}
 
 
 class Item(BaseModel):
@@ -189,7 +195,7 @@ async def create_upload_file(file: UploadFile = File(...), token: str = Form(...
         dir_path = os.path.join(zip_dir, file.filename)
         with open(dir_path, 'wb') as f:  # gif直接保存在压缩后的文件夹
             f.write(contents)
-        return {"path": dir_path}
+        return {"path": file.filename}
 
     with open(src_path, 'wb') as f:  # 其余保存在原图文件夹
         f.write(contents)
