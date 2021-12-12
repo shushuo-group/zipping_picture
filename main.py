@@ -39,7 +39,9 @@ async def zipping(path: str):
     if os.path.exists(dir_path):
         return {"path": dir_path}
     img = cv2.imread(src_path)
-
+    if(img == None):
+        return HTTPException(
+            status_code=404, detail=f"No img: {pic_name} found!")
     heigh, width = img.shape[:2]
 
     if heigh+width/2 > 1000:
