@@ -87,7 +87,7 @@ async def read_token(token: str):
     """
     # item_name =
     # item为集合名称
-    the_item = await DB.users.find_one({"token": ObjectId(token)})
+    the_item = await DB.users.find_one({"token": token})
     if the_item:
         return fix_item_id(the_item)
     else:
@@ -157,7 +157,7 @@ async def read_token(token: str):
 
 
 @app.post("/uploadfile/")
-async def create_upload_file(file: UploadFile = File(...), token: str = ""):
+async def create_upload_file(file: UploadFile = File(...), token: str = File('token')):
     # token识别
     await read_token(token)
     # 保存图片
