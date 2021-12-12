@@ -50,7 +50,7 @@ async def zipping(path: str):
         return {"path": dir_path}
 
     img = cv2.imread(src_path)
-    if(img == None):
+    if img is None:
         return HTTPException(
             status_code=404, detail=f"No img: {pic_name} found!"
         )
