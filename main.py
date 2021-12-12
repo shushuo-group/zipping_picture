@@ -157,7 +157,7 @@ async def read_token(token: str):
 
 
 @app.post("/uploadfile/")
-async def create_upload_file(file: UploadFile = File(...), token: str = Form('token')):
+async def create_upload_file(file: UploadFile = File(...), token: str = Form(...)):
     # token识别
     await read_token(token)
     # 保存图片
