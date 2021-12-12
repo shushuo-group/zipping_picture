@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, File, UploadFile
+from fastapi import FastAPI, HTTPException, File, Form, UploadFile
 import cv2
 import uvicorn
 import os
@@ -157,7 +157,7 @@ async def read_token(token: str):
 
 
 @app.post("/uploadfile/")
-async def create_upload_file(file: UploadFile = File(...), token: str = File('token')):
+async def create_upload_file(file: UploadFile = File(...), token: str = Form('token')):
     # token识别
     await read_token(token)
     # 保存图片
