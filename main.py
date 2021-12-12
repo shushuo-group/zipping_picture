@@ -2,13 +2,19 @@ from fastapi import FastAPI, HTTPException, File, Form, UploadFile
 import cv2
 import uvicorn
 import os
+import time
 
 from motor.motor_asyncio import AsyncIOMotorClient
-from bson.objectid import ObjectId
+from bson.objectid import ObjectId  # mongo存储的数据在没有特别指定_id数据类型时，默认类型为ObjectID
 from pydantic import BaseModel
 
 from fastapi.middleware.cors import CORSMiddleware
 
+# nozip_dir 未压缩图片文件夹路径
+nozip_dir = '/www/wwwroot/shushuo.space/upload/pic/'
+
+# zip_dir 已压缩图片文件夹路径
+zip_dir = '/www/wwwroot/shushuo.space/upload/zipped_pic/'
 
 # connect to mongodb
 DB_CLIENT = AsyncIOMotorClient('127.0.0.1', 27017)
@@ -16,7 +22,7 @@ DB = DB_CLIENT['shushuo']  # 库名称
 
 app = FastAPI()  # 创建 api 对象
 origins = [
-    "*", "http://localhost:6666"
+    "http://localhost:6666"
 ]
 # 解决跨域问题
 app.add_middleware(
@@ -30,18 +36,24 @@ app.add_middleware(
 
 @app.get("/pic/{path}")
 async def zipping(path: str):
+    # pic_name  like  abc.png
     pic_name = os.path.basename(path)
-    src_path = os.path.join('/www/wwwroot/shushuo.space/upload/pic/', pic_name)
-    dir_path = os.path.join(
-        '/www/wwwroot/shushuo.space/upload/zipped_pic/', pic_name)
+    # src_path -> nozip
+    src_path = os.path.join(nozip_dir, pic_name)
+    # dir_path -> zip
+    dir_path = os.path.join(zip_dir, pic_name)
+    # gif图片由前端完成压缩 即不需要压缩 直接进行存储（不进行接下来的操作 即默认在之前已经完成存储）
     if ".gif" in pic_name:
         return {"path": src_path}
-    if os.path.exists(dir_path):
+
+    if os.path.exists(dir_path):  # 已经存在压缩就不再执行后续
         return {"path": dir_path}
+
     img = cv2.imread(src_path)
     if(img == None):
         return HTTPException(
-            status_code=404, detail=f"No img: {pic_name} found!")
+            status_code=404, detail=f"No img: {pic_name} found!"
+        )
     heigh, width = img.shape[:2]
 
     if heigh+width/2 > 1000:
@@ -52,8 +64,9 @@ async def zipping(path: str):
         compress_rate = 0.35
     else:
         compress_rate = 0.5
-    img_resize = cv2.resize(img, (int(width*compress_rate), int(heigh*compress_rate)),
-                            interpolation=cv2.INTER_AREA)  # 双三次插值
+    img_resize = cv2.resize(
+        img, (int(width * compress_rate), int(heigh * compress_rate)),
+        interpolation=cv2.INTER_AREA)  # 双三次插值
 
     zip_num = 10
     cv2.imwrite(dir_path, img_resize, [cv2.IMWRITE_JPEG_QUALITY, zip_num])
@@ -71,8 +84,8 @@ class Item(BaseModel):
 def fix_item_id(item):
     """
     二次校验数据
-    :param item:
-    :return:
+    :param item:检验的条目
+    :return:本身条目
     """
     if item.get("_id", False):
         item["_id"] = str(item["_id"])
@@ -85,13 +98,13 @@ def fix_item_id(item):
 @app.get("/items/{token}", tags=["items"])
 async def read_token(token: str):
     """
-    根据条件搜索数据
+    根据条件搜索数据，返回用户账号id
     """
     # item_name =
     # item为集合名称
     the_item = await DB.users.find_one({"token": token})
-    if the_item:
-        return fix_item_id(the_item)
+    if the_item and the_item['token'] == token:
+        return fix_item_id(the_item)['userAccount']
     else:
         raise HTTPException(status_code=404, detail="Token not found")
 
@@ -161,11 +174,13 @@ async def read_token(token: str):
 @app.post("/uploadfile/")
 async def create_upload_file(file: UploadFile = File(...), token: str = Form(...)):
     # token识别
-    await read_token(token)
+    user_id = await read_token(token)
     # 保存图片
     contents = await file.read()
+    temp_time = round(time.time()*1000)
+    file.filename = user_id+'_'+str(temp_time)+'_'+file.filename
     src_path = os.path.join(
-        '/www/wwwroot/shushuo.space/upload/pic/', file.filename)
+        nozip_dir, file.filename)
     with open(src_path, 'wb') as f:
         f.write(contents)
     # 返回的是压缩后的路径
