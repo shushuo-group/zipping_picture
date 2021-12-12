@@ -42,12 +42,14 @@ async def zipping(path: str):
     src_path = os.path.join(nozip_dir, pic_name)
     # dir_path -> zip
     dir_path = os.path.join(zip_dir, pic_name)
-    # gif图片由前端完成压缩 即不需要压缩 直接进行存储（不进行接下来的操作 即默认在之前已经完成存储）
-    if ".gif" in pic_name:
-        return {"path": src_path}
 
     if os.path.exists(dir_path):  # 已经存在压缩就不再执行后续
         return {"path": dir_path}
+
+    elif pic_name.lower().endswith(".gif"):  # 不压缩gif
+        return HTTPException(
+            status_code=404, detail=f"No zipping gif image: {pic_name}!"
+        )
 
     img = cv2.imread(src_path)
     if img is None:
@@ -181,7 +183,15 @@ async def create_upload_file(file: UploadFile = File(...), token: str = Form(...
     file.filename = user_id+'_'+str(temp_time)+'_'+file.filename
     src_path = os.path.join(
         nozip_dir, file.filename)
-    with open(src_path, 'wb') as f:
+
+    # gif图片由前端完成压缩 即不需要压缩 直接进行存储
+    if file.filename.lower().endswith(".gif"):
+        dir_path = os.path.join(zip_dir, file.filename)
+        with open(dir_path, 'wb') as f:  # gif直接保存在压缩后的文件夹
+            f.write(contents)
+        return {"path": src_path}
+
+    with open(src_path, 'wb') as f:  # 其余保存在原图文件夹
         f.write(contents)
     # 返回的是压缩后的路径
     return await zipping(file.filename)
