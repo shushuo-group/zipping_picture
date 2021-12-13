@@ -22,14 +22,17 @@ DB = DB_CLIENT['shushuo']  # 库名称
 
 app = FastAPI()  # 创建 api 对象
 
-# 调试所需端口 正式上线可以关闭(即其为空值) 默认 "http://localhost:8080"
-# debug_origin = "http://localhost:8080"
-debug_origin = ""
+# 调试所需端口
+debug_origin = "http://localhost:8080"
+
+# 上线所需端口
+up_origin = "https://www.shushuo.space"
 
 origins = [
-    "http://localhost:6666",
-    debug_origin
+    debug_origin,
+    up_origin,
 ]
+
 # 解决跨域问题
 app.add_middleware(
     CORSMiddleware,
