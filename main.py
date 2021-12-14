@@ -12,9 +12,17 @@ from fastapi.middleware.cors import CORSMiddleware
 
 # nozip_dir 未压缩图片文件夹路径
 nozip_dir = '/www/wwwroot/shushuo.space/upload/pic/'
+debug_nozip_dir = '必须为网站目录下对应的文件夹目录'
+
+# 调试的时候把下面一行解开注释即可
+# nozip_dir = debug_nozip_dir
 
 # zip_dir 已压缩图片文件夹路径
 zip_dir = '/www/wwwroot/shushuo.space/upload/zipped_pic/'
+debug_zip_dir = '必须为网站目录下对应的文件夹目录'
+
+# 调试的时候把下面一行解开注释即可
+# zip_dir = debug_zip_dir
 
 # connect to mongodb
 DB_CLIENT = AsyncIOMotorClient('127.0.0.1', 27017)
@@ -22,10 +30,10 @@ DB = DB_CLIENT['shushuo']  # 库名称
 
 app = FastAPI()  # 创建 api 对象
 
-# 调试所需端口
+# 调试所需origin
 debug_origin = "http://localhost:8080"
 
-# 上线所需端口
+# 上线所需origin
 up_origin = "https://www.shushuo.space"
 
 origins = [
