@@ -33,12 +33,10 @@ app = FastAPI()  # 创建 api 对象
 # 调试所需origin
 debug_origin = "http://localhost:8080"
 
-# 上线所需origin
-up_origin = "https://www.shushuo.space"
-
 origins = [
     debug_origin,
-    up_origin,
+    "https://www.shushuo.space",
+    "https://shushuo.space"
 ]
 
 # 解决跨域问题

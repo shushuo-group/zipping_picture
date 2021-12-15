@@ -28,13 +28,10 @@
 网站主体服务：
     1. 邮件主动发送功能的关闭
     2. 缓存的关闭
-    3. 全局进行域名的替换
-        https://www.shushuo.space/ ---> http://localhost:8080/
-    4. bin/www 文件内的端口由 6666 ---> 8080
+    3. bin/www 文件内的端口由 6666 ---> 8080
     5. 图片上传模块的url需要进行替换
     https://image.shushuo.space/uploadfile/ ---> http://localhost:6788/uploadfile/
 
     提交流程：
-        1. http://localhost:8080/ ---> https://www.shushuo.space/
-        2. http://localhost:6788/uploadfile/ ---> https://image.shushuo.space/uploadfile/
-        3. public || views || router 进行迁移
+        1. http://localhost:6788/uploadfile/ ---> https://image.shushuo.space/uploadfile/
+        2. public || views || router 进行迁移
