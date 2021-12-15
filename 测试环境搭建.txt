@@ -6,7 +6,7 @@
         1. 分别输入所需的
             debug_nozip_dir
             debug_zip_dir
-            这俩个路径(必须为网站目录下对应的文件夹目录)
+            这俩个路径(必须为本地网站目录下对应的文件夹目录)
 
             tips:
                 1.路径不允许出现中文字符
@@ -26,12 +26,16 @@
             2. # zip_dir = debug_zip_dir
 
 网站主体服务：
-    1. 邮件主动发送功能的关闭
-    2. 缓存的关闭
-    3. bin/www 文件内的端口由 6666 ---> 8080
-    5. 图片上传模块的url需要进行替换
-    https://image.shushuo.space/uploadfile/ ---> http://localhost:6788/uploadfile/
+
+    搭建流程：
+        1. 邮件主动发送功能的关闭
+        2. 缓存的关闭
+        3. bin/www 文件内的端口由 6666 ---> 8080
+        4. 图片上传模块的url需要进行替换
+        https://image.shushuo.space/uploadfile/ ---> http://localhost:6788/uploadfile/
+        5. 向压缩文件夹内加入一张图片替代图（pic_error.png为图片名即可）
 
     提交流程：
         1. http://localhost:6788/uploadfile/ ---> https://image.shushuo.space/uploadfile/
-        2. public || views || router 进行迁移
+        2. public || views || routes 进行迁移 (因为主要编码部分再次 其他情况具体执行)
+        3. 注意静态资源缓存机制的执行
