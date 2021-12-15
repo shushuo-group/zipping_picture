@@ -39,6 +39,7 @@ origins = [
     "https://shushuo.space"
 ]
 
+
 # 解决跨域问题
 app.add_middleware(
     CORSMiddleware,
