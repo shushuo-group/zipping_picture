@@ -4,5 +4,5 @@
 
 必要的库由下命令安装：
 ```shell
-pip install requirements.txt
+pip install -r requirements.txt
 ```
