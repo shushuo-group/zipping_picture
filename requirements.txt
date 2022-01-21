@@ -2,5 +2,5 @@ opencv-python
 uvicorn
 fastapi
 python-multipart
-motor
-bson
+motor==2.5.1
+pymongo==3.12
