@@ -73,23 +73,29 @@ async def zipping(path: str):
             status_code=404, detail=f"No img: {pic_name} found!"
         )
     heigh, width = img.shape[:2]
-    
-    if (heigh+width)/2 > 2000:
-        compress_rate = 0.1
-    elif (heigh+width)/2 > 1000:
+
+    if os.path.getsize(src_path) < 100 * 1024:  # 文件大小小于100KB
+        compress_rate = 0.75
+    elif (heigh+width)/2 > 4000:
         compress_rate = 0.15
-    elif (heigh+width)/2 > 500:
-        compress_rate = 0.25
-    elif (heigh+width)/2 > 250:
+    elif (heigh+width)/2 > 2000:
+        compress_rate = 0.3
+    elif (heigh+width)/2 > 1000:
         compress_rate = 0.35
+    elif (heigh+width)/2 > 500:
+        compress_rate = 0.4
+    elif (heigh+width)/2 > 250:
+        compress_rate = 0.45
     else:
         compress_rate = 0.5
+
     img_resize = cv2.resize(
         img, (int(width * compress_rate), int(heigh * compress_rate)),
-        interpolation=cv2.INTER_AREA)  # 双三次插值
+        interpolation=cv2.INTER_AREA)  # 改变图片大小，使用双三次插值
 
-    zip_num = int(compress_rate * 100)
-    cv2.imwrite(dir_path, img_resize, [cv2.IMWRITE_JPEG_QUALITY, zip_num])
+    zip_num = min(65, max(35, int(compress_rate * 100)))
+    cv2.imwrite(dir_path, img_resize, [
+                cv2.IMWRITE_JPEG_QUALITY, zip_num])  # 质量降低
     return {"path": pic_name}
 
 
