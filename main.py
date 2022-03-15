@@ -204,7 +204,7 @@ async def create_upload_file(file: UploadFile = File(...), token: str = Form(...
     # 保存图片
     contents = await file.read()
     temp_time = round(time.time()*1000)
-    file.filename = user_id+'_'+str(temp_time)+'_'+file.filename
+    file.filename = user_id+'_'+str(temp_time)+os.path.splittext(file.filename)[-1]
     src_path = os.path.join(
         nozip_dir, file.filename)
 
